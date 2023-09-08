@@ -62,9 +62,6 @@ function displayImages(response, admin = false) {
 
 function deleteImage(containeImgAdmin, figure) {
 	const trashButton = containeImgAdmin.querySelector(".trash");
-	trashButton.addEventListener("submit", async (event) => {
-		event.preventDefault();
-	});
 	trashButton.addEventListener("click", async (event) => {
 		event.preventDefault();
 		const image = trashButton.parentNode.querySelector("img");
@@ -72,10 +69,10 @@ function deleteImage(containeImgAdmin, figure) {
 			method: "DELETE",
 			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
 		}).then((response) => {
+			event.preventDefault();
+			event.stopPropagation();
 			if (response.status === 204) {
 				console.log("ok");
-				event.preventDefault();
-				event.stopPropagation();
 			} else {
 				console.log("error");
 			}
