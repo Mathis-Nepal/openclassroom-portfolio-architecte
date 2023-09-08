@@ -47,31 +47,36 @@ function displayImages(response, admin = false) {
 			const containeImgAdmin = document.createElement("div");
 			const trash = document.createElement("button");
 			trash.classList.add("trash");
-			trash.id = element.id - 1;
+			containeImgAdmin.dataset.id = element.id;
 			const i = document.createElement("i");
 			i.classList.add("fa-solid", "fa-trash-can", "trash-icon");
 			trash.appendChild(i);
 			containeImgAdmin.append(trash, img);
 			figure.appendChild(containeImgAdmin);
-			deleteImage(containeImgAdmin);
+			deleteImage(containeImgAdmin, figure);
 		}
 
 		container.appendChild(figure);
 	});
 }
 
-function deleteImage(containeImgAdmin) {
+function deleteImage(containeImgAdmin, figure) {
 	const trashButton = containeImgAdmin.querySelector(".trash");
-	trashButton.addEventListener("click", async () => {
+	trashButton.addEventListener("click", async (event) => {
+		event.preventDefault();
+	});
+	trashButton.addEventListener("click", async (event) => {
+		event.preventDefault();
 		const image = trashButton.parentNode.querySelector("img");
-		await fetch(`${MODE}/works/${trashButton.id}`, {
+		await fetch(`${MODE}/works/${containeImgAdmin.dataset.id}`, {
 			method: "DELETE",
 			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
 		}).then((response) => {
-			console.log(response);
+			// console.log(response);
 			if (response.status === 200) {
-				image.parentNode.remove();
-				displayImages(responseWorks, (admin = true));
+				event.preventDefault();
+				// figure.remove();
+				// displayImages(responseWorks, (admin = true));
 			} else {
 				console.log("error");
 			}
@@ -141,9 +146,6 @@ if (buttonConnection !== null) {
 
 const HomeModal = document.querySelector(".home-modal");
 const body = document.querySelector("body");
-
-if (HomeModal !== null) {
-}
 
 // HomeModal.showModal();
 // displayImages(response, true);
