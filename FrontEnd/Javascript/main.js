@@ -3,7 +3,7 @@ const responseWorks = JSON.parse(localStorage.getItem("response"));
 
 async function BackEndRessources() {
 	try {
-		if (responseWorks.length === 0 || responseWorks === null) {
+		if (responseWorks === null) {
 			console.log("affect response to localStorage");
 			const response = await fetch(`${MODE}/works`).then((response) => response.json());
 			localStorage.setItem("response", JSON.stringify(response));
@@ -16,12 +16,13 @@ async function BackEndRessources() {
 	}
 }
 
-BackEndRessources();
+await BackEndRessources();
 
 const listFilter = document.querySelector(".list-filter");
 const editionMode = document.querySelector(".edition-mode");
 const editionModeButton = document.querySelectorAll(".edition-mode-button");
 // localStorage.removeItem("token");
+// localStorage.removeItem("response");
 const JWTtoken = localStorage.getItem("token");
 
 const admin = JWTtoken !== null;
@@ -135,7 +136,7 @@ if (buttonConnection !== null) {
 		}).then(async (response) => {
 			const token = await response.json().then((data) => data.token);
 			if (response.status === 200) {
-				// window.location.href = "index.html";
+				window.location.href = "index.html";
 				localStorage.setItem("token", token);
 			} else {
 				error.classList.add("active");
