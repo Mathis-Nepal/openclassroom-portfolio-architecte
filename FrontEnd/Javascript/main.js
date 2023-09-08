@@ -1,6 +1,22 @@
 import { MODE } from "./config.js";
+const responseWorks = JSON.parse(localStorage.getItem("response"));
 
-const responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
+async function BackEndRessources() {
+	try {
+		if (responseWorks.length === 0 || responseWorks === null) {
+			console.log("affect response to localStorage");
+			const response = await fetch(`${MODE}/works`).then((response) => response.json());
+			localStorage.setItem("response", JSON.stringify(response));
+			responseWorks = localStorage.getItem("response");
+		} else {
+			console.log("already existing in localStorage");
+		}
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+BackEndRessources();
 
 const listFilter = document.querySelector(".list-filter");
 const editionMode = document.querySelector(".edition-mode");
@@ -132,15 +148,12 @@ if (buttonConnection !== null) {
 
 // displayImages(response, true);
 
-
-
 const homeModal = document.querySelector(".container-modal");
 const modalContent = document.querySelector(".modal-content");
 const firstModalContent = document.querySelector(".modal-content.first");
 const secondModalContent = document.querySelector(".modal-content.second");
 const bodyElement = document.querySelector("body");
 const buttonAddImage = document.querySelector(".button.modal");
-
 
 // homeModal.showModal();
 // homeModal.classList.remove("hidden");
