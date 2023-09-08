@@ -81,13 +81,12 @@ function displayImages(response, admin = false) {
 	});
 }
 
+const indexElementDelete = [];
 function deleteImage(figure) {
 	const trashButton = figure.querySelector(".trash");
-	trashButton.addEventListener("click", async () => {
-		await fetch(`${MODE}/works/${figure.dataset.id}`, {
-			method: "DELETE",
-			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
-		}).then(() => {});
+	trashButton.addEventListener("click", (event) => {
+		event.preventDefault();
+		indexElementDelete.push(figure.dataset.id);
 		figure.remove();
 	});
 	// BackEndRessources(true);
@@ -208,6 +207,12 @@ function closingModal() {
 	homeModal.classList.add("hidden");
 	homeModal.close();
 	bodyElement.style.overflow = "auto";
+	indexElementDelete.forEach(async (index) => {
+		await fetch(`${MODE}/works/${index}`, {
+			method: "DELETE",
+			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
+		});
+	});
 }
 
 // formulaire d'ajout d'image
