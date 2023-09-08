@@ -1,22 +1,28 @@
 import { MODE } from "./config.js";
-const responseWorks = JSON.parse(localStorage.getItem("response"));
 
-async function BackEndRessources() {
-	try {
-		if (responseWorks === null) {
-			console.log("affect response to localStorage");
-			const response = await fetch(`${MODE}/works`).then((response) => response.json());
-			localStorage.setItem("response", JSON.stringify(response));
-			responseWorks = localStorage.getItem("response");
-		} else {
-			console.log("already existing in localStorage");
-		}
-	} catch (error) {
-		console.log(error);
-	}
-}
+//session plutot que local storage
+// const responseWorks = JSON.parse(localStorage.getItem("response"));
+const responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
 
-await BackEndRessources();
+// async function BackEndRessources(newData = false) {
+// 	try {
+// 		if (newData) {
+// 			responseWorks = null;
+// 		}
+// 		if (responseWorks === null) {
+// 			console.log("affect response to localStorage");
+// 			const response = await fetch(`${MODE}/works`).then((response) => response.json());
+// 			localStorage.setItem("response", JSON.stringify(response));
+// 			responseWorks = localStorage.getItem("response");
+// 		} else {
+// 			console.log("already existing in localStorage");
+// 		}
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// }
+
+// await BackEndRessources();
 
 const listFilter = document.querySelector(".list-filter");
 const editionMode = document.querySelector(".edition-mode");
@@ -75,19 +81,18 @@ function displayImages(response, admin = false) {
 	});
 }
 
-async function deleteImage(figure) {
+function deleteImage(figure) {
 	const trashButton = figure.querySelector(".trash");
-	trashButton.addEventListener("click", async (event) => {
-		event.preventDefault();
+	trashButton.addEventListener("click", async () => {
 		await fetch(`${MODE}/works/${figure.dataset.id}`, {
 			method: "DELETE",
 			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
-		}).then(() => {
-			event.preventDefault();
-		});
+		}).then(() => {});
 		figure.remove();
 	});
+	// BackEndRessources(true);
 }
+
 //filter
 
 const filters = document.querySelectorAll(".list-filter button");
