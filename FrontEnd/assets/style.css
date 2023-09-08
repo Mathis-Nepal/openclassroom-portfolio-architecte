@@ -276,11 +276,13 @@ li:hover {
 	text-align: left;
 	margin-top: 30px;
 	display: flex;
+	justify-content: space-around;
 	flex-direction: column;
 }
 
 #form-style input,
-#form-style select {
+#form-style select,
+.button.modal {
 	padding: 0 1rem;
 	height: 50px;
 }
@@ -310,7 +312,8 @@ li:hover {
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 
-input[type="submit"] {
+input[type="submit"],
+.button.modal {
 	width: 180px;
 	margin: 2em auto;
 }
@@ -386,7 +389,7 @@ footer nav ul {
 	justify-content: center;
 	height: 700px;
 	aspect-ratio: 1/1.4;
-	padding: 1rem 5rem;
+	padding: 3rem 5rem;
 }
 .container-modal {
 	border-radius: 10px;

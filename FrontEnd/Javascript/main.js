@@ -150,7 +150,7 @@ if (buttonConnection !== null) {
 // displayImages(response, true);
 
 const homeModal = document.querySelector(".container-modal");
-const modalContent = document.querySelector(".modal-content");
+const modalContent = document.querySelectorAll(".modal-content");
 const firstModalContent = document.querySelector(".modal-content.first");
 const secondModalContent = document.querySelector(".modal-content.second");
 const bodyElement = document.querySelector("body");
@@ -166,7 +166,7 @@ editionModeButton.forEach((button) => {
 });
 
 function handleEditionModeClick(event) {
-	const closeModalButton = document.querySelector(".close-modal");
+	const closeModalButtons = document.querySelectorAll(".close-modal");
 	displayImages(responseWorks, true);
 
 	openHomeModal();
@@ -175,11 +175,15 @@ function handleEditionModeClick(event) {
 	event.stopPropagation();
 
 	homeModal.addEventListener("click", closingModal);
-	modalContent.addEventListener("click", (event) => {
-		event.stopPropagation();
+	modalContent.forEach((content) => {
+		content.addEventListener("click", (event) => {
+			event.stopPropagation();
+		});
 	});
 
-	closeModalButton.addEventListener("click", closingModal);
+	closeModalButtons.forEach((button) => {
+		button.addEventListener("click", closingModal);
+	});
 
 	buttonAddImage.addEventListener("click", () => {
 		firstModalContent.classList.add("hidden");
@@ -199,4 +203,25 @@ function closingModal() {
 	homeModal.classList.add("hidden");
 	homeModal.close();
 	bodyElement.style.overflow = "auto";
+}
+
+// formulaire d'ajout d'image
+
+if (secondModalContent !== null) {
+	const formulaire = secondModalContent.querySelector("form");
+	const inputFile = formulaire.querySelector("#file");
+	const customInputFile = formulaire.querySelector(".button-file .container");
+
+	//when user seleet file
+
+	inputFile.addEventListener("change", () => {
+		customInputFile.innerHTML = "";
+		const file = inputFile.files;
+		const reader = new FileReader();
+		const image = document.createElement("img");
+		image.src = file[0];
+		console.log(file[0]);
+		customInputFile.appendChild(image);
+		reader.addEventListener("load", () => {});
+	});
 }
