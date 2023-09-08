@@ -44,41 +44,31 @@ function displayImages(response, admin = false) {
 			figcaption.textContent = element.title;
 			figure.append(figcaption, img);
 		} else {
-			const containeImgAdmin = document.createElement("div");
 			const trash = document.createElement("button");
 			trash.classList.add("trash");
-			containeImgAdmin.dataset.id = element.id;
+			figure.dataset.id = element.id;
 			const i = document.createElement("i");
 			i.classList.add("fa-solid", "fa-trash-can", "trash-icon");
 			trash.appendChild(i);
-			containeImgAdmin.append(trash, img);
-			figure.appendChild(containeImgAdmin);
-			deleteImage(containeImgAdmin, figure);
+			figure.append(trash, img);
+			deleteImage(figure);
 		}
 
 		container.appendChild(figure);
 	});
 }
 
-function deleteImage(containeImgAdmin, figure) {
-	const trashButton = containeImgAdmin.querySelector(".trash");
+async function deleteImage(figure) {
+	const trashButton = figure.querySelector(".trash");
 	trashButton.addEventListener("click", async (event) => {
 		event.preventDefault();
-		const image = trashButton.parentNode.querySelector("img");
-		await fetch(`${MODE}/works/${containeImgAdmin.dataset.id}`, {
+		await fetch(`${MODE}/works/${figure.dataset.id}`, {
 			method: "DELETE",
 			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
-		}).then((response) => {
+		}).then(() => {
 			event.preventDefault();
-			event.stopPropagation();
-			if (response.status === 204) {
-				console.log("ok");
-			} else {
-				console.log("error");
-			}
 		});
-
-		// Vous pouvez ajouter ici le code pour gérer la suppression, si nécessaire.
+		figure.remove();
 	});
 }
 //filter
@@ -129,7 +119,7 @@ if (buttonConnection !== null) {
 		}).then(async (response) => {
 			const token = await response.json().then((data) => data.token);
 			if (response.status === 200) {
-				window.location.href = "index.html";
+				// window.location.href = "index.html";
 				localStorage.setItem("token", token);
 			} else {
 				error.classList.add("active");
@@ -140,24 +130,59 @@ if (buttonConnection !== null) {
 
 //modal amdin
 
-const HomeModal = document.querySelector(".home-modal");
-const body = document.querySelector("body");
-
-// HomeModal.showModal();
 // displayImages(response, true);
 
+
+
+const homeModal = document.querySelector(".container-modal");
+const modalContent = document.querySelector(".modal-content");
+const firstModalContent = document.querySelector(".modal-content.first");
+const secondModalContent = document.querySelector(".modal-content.second");
+const bodyElement = document.querySelector("body");
+const buttonAddImage = document.querySelector(".button.modal");
+
+
+// homeModal.showModal();
+// homeModal.classList.remove("hidden");
+// firstModalContent.classList.add("hidden");
+// secondModalContent.classList.remove("hidden");
+
 editionModeButton.forEach((button) => {
-	button.addEventListener("click", (event) => {
-		const closeModal = document.querySelector(".close-modal");
-		displayImages(responseWorks, true);
-		HomeModal.showModal();
-		body.style.overflow = "hidden";
-		event.stopPropagation();
-		closeModal.addEventListener("click", () => {
-			console.log("close");
-			galleryAdmin.innerHTML = "";
-			HomeModal.close();
-			body.style.overflow = "auto";
-		});
-	});
+	button.addEventListener("click", handleEditionModeClick);
 });
+
+function handleEditionModeClick(event) {
+	const closeModalButton = document.querySelector(".close-modal");
+	displayImages(responseWorks, true);
+
+	openHomeModal();
+
+	bodyElement.style.overflow = "hidden";
+	event.stopPropagation();
+
+	homeModal.addEventListener("click", closingModal);
+	modalContent.addEventListener("click", (event) => {
+		event.stopPropagation();
+	});
+
+	closeModalButton.addEventListener("click", closingModal);
+
+	buttonAddImage.addEventListener("click", () => {
+		firstModalContent.classList.add("hidden");
+		secondModalContent.classList.remove("hidden");
+	});
+}
+
+function openHomeModal() {
+	secondModalContent.classList.add("hidden");
+	homeModal.classList.remove("hidden");
+	firstModalContent.classList.remove("hidden");
+	homeModal.showModal();
+}
+
+function closingModal() {
+	galleryAdmin.innerHTML = "";
+	homeModal.classList.add("hidden");
+	homeModal.close();
+	bodyElement.style.overflow = "auto";
+}
