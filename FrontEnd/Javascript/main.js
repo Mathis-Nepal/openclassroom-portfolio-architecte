@@ -5,7 +5,7 @@ import { createFirstModal } from "./utils.js";
 import { createSecondModal } from "./utils.js";
 import { createCustomInputFile } from "./utils.js";
 
-const responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
+let responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
 const JWTtoken = sessionStorage.getItem("token");
 let createModalBool = true;
 const editionModeButton = document.querySelectorAll(".edition-mode-button");
@@ -20,12 +20,15 @@ editionModeButton.forEach((button) => {
 const gallery = document.querySelector(".gallery");
 let galleryAdmin = document.querySelector(".admin-gallery");
 
-function displayImages(response, admin = false) {
+async function displayImages(response, admin = false) {
+	response = await fetch(`${MODE}/works`).then((response) => response.json());
 	if (galleryAdmin === null) {
 		galleryAdmin = createElementWithClassesAndText("div", ["admin-gallery"]);
 	}
 	const container = admin ? galleryAdmin : gallery;
 
+	// gallery.innerHTML = "";
+	container.innerHTML = "";
 	response.forEach((element) => {
 		const figure = document.createElement("figure");
 		const img = document.createElement("img");
@@ -247,6 +250,7 @@ function createModal() {
 
 function closingModal() {
 	galleryAdmin.innerHTML = "";
+
 	homeModal.classList.add("hidden");
 	homeModal.close();
 	bodyElement.style.overflow = "auto";
@@ -255,7 +259,7 @@ function closingModal() {
 		await fetch(`${MODE}/works/${index}`, {
 			method: "DELETE",
 			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
-		});
+		}).then(displayImages(responseWorks));
 	});
 	indexElementDelete = [];
 }
