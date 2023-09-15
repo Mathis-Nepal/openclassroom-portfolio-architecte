@@ -5,6 +5,8 @@ import { createFirstModal } from "./utils.js";
 import { createSecondModal } from "./utils.js";
 import { createCustomInputFile } from "./utils.js";
 
+console.log(MODE);
+
 let responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
 const JWTtoken = sessionStorage.getItem("token");
 let createModalBool = true;
@@ -191,19 +193,20 @@ function handleEditionModeClick(event) {
 			if (inputFile.files.length > 0 && input.value !== "" && select.value !== "") {
 				buttonAddImage[1].classList.remove("disabled");
 				formulaire.addEventListener("submit", async (event) => {
-					const image = document.querySelector(".preview-image");
+					console.log("submit");
 					event.preventDefault();
+					const image = document.querySelector(".preview-image");
 					const formData = new FormData(formulaire);
 					const select = formulaire.querySelector("#categories");
 					const optionElement = select.querySelector(`option[value="${select.value}"]`);
 
 					formData.append("category", optionElement.dataset.id);
 
-					const response = await fetch(`${MODE}/works`, {
+					await fetch(`${MODE}/works`, {
 						method: "POST",
 						headers: { Authorization: `Bearer ${JWTtoken}` },
 						body: formData,
-					}).then((response) => response.json());
+					});
 				});
 			} else {
 				buttonAddImage[1].classList.add("disabled");
