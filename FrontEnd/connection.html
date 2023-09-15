@@ -18,7 +18,7 @@
                 <li><a href="./index.html">projets</a></li>
                 <li><a href="#">contact</a></li>
                 <li><a href="#">login</a></li>
-                <li><img src=" ./assets/icons/instagram.png" alt="Instagram"></li>
+                <li><a href="#"><img src="./assets/icons/instagram.png" alt="Instagram"></a></li>
             </ul>
         </nav>
     </header>
@@ -27,9 +27,9 @@
             <h2>Log In</h2>
             <form action="#" method="POST">
                 <label for="email">E-mail</label>
-                <input class="shadow email-connection" type="email" name="email" id="email" required>
+                <input autocomplete="email" class="shadow email-connection" type="email" name="email" id="email" required>
                 <label for="password">Mot de passe</label>
-                <input class="shadow password-connection" type="password" name="password" id="password" required>
+                <input autocomplete="current-password" class="shadow password-connection" type="password" name="password" id="password" required>
                 <input class="connection button" class="button" type="submit" value="Se connecter">
                 <span class="error-connection">Les identifiants sont incorrects</span>
                 <input class="forgot-password" type="button" value="Mot de passe oublié">
