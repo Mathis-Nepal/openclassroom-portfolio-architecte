@@ -7,7 +7,7 @@ import { createCustomInputFile } from "./utils.js";
 
 console.log(MODE);
 
-let responseWorks;
+let responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
 const JWTtoken = sessionStorage.getItem("token");
 let createModalBool = true;
 const editionModeButton = document.querySelectorAll(".edition-mode-button");
