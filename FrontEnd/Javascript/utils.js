@@ -7,10 +7,13 @@ export const createElementWithClassesAndText = (tag, classes, text) => {
 	return element;
 };
 
-export function ViewAdmin(JWTtoken, editionModeButton) {
+export function ViewAdmin(editionModeButton) {
+	const JWTtoken = sessionStorage.getItem("token");
+	console.log(JWTtoken);
 	const admin = JWTtoken !== null;
 	const listFilter = document.querySelector(".list-filter");
 	const editionMode = document.querySelector(".edition-mode");
+	const loginButton = document.querySelector(".login-button");
 	if (listFilter !== null && editionMode !== null && editionModeButton !== null) {
 		if (admin) {
 			listFilter.classList.add("hidden");
@@ -18,11 +21,24 @@ export function ViewAdmin(JWTtoken, editionModeButton) {
 			editionModeButton.forEach((button) => {
 				button.classList.remove("hidden");
 			});
+			loginButton.innerHTML = "logout";
+			// loginButton.classList.add("logout-button");
+			console.log(`admin ${admin}`);
+			loginButton.addEventListener("click", (event) => {
+				event.preventDefault();
+				console.log("logout");
+				sessionStorage.removeItem("token");
+				ViewAdmin(editionModeButton);
+			});
 		} else {
 			listFilter.classList.remove("hidden");
 			editionMode.classList.add("hidden");
 			editionModeButton.forEach((button) => {
 				button.classList.add("hidden");
+			});
+			loginButton.innerHTML = "login";
+			loginButton.addEventListener("click", (event) => {
+				location.href = "./connection.html";
 			});
 		}
 	}

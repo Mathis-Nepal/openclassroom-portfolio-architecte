@@ -7,12 +7,12 @@ import { createCustomInputFile } from "./utils.js";
 
 console.log(MODE);
 
-let responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
+let responseWorks;
 const JWTtoken = sessionStorage.getItem("token");
 let createModalBool = true;
 const editionModeButton = document.querySelectorAll(".edition-mode-button");
 
-ViewAdmin(JWTtoken, editionModeButton);
+ViewAdmin(editionModeButton);
 
 editionModeButton.forEach((button) => {
 	button.addEventListener("click", handleEditionModeClick);
@@ -108,7 +108,7 @@ function connection() {
 			event.preventDefault();
 			const emailValue = email.value;
 			const passwordValue = password.value;
-			fetch(`${MODE}/users/login`, {
+			await fetch(`${MODE}/users/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ email: emailValue, password: passwordValue }),
@@ -190,26 +190,35 @@ function handleEditionModeClick(event) {
 		inputFile.addEventListener("input", verifyChampCompleted);
 
 		function verifyChampCompleted() {
-			if (inputFile.files.length > 0 && input.value !== "" && select.value !== "") {
-				buttonAddImage[1].classList.remove("disabled");
-				formulaire.addEventListener("submit", async (event) => {
-					console.log("submit");
-					event.preventDefault();
-					const image = document.querySelector(".preview-image");
-					const formData = new FormData(formulaire);
-					const select = formulaire.querySelector("#categories");
-					const optionElement = select.querySelector(`option[value="${select.value}"]`);
+			try {
+				if (inputFile.files.length > 0 && input.value !== "" && select.value !== "") {
+					buttonAddImage[1].classList.remove("disabled");
+					// buttonAddImage[1].addEventListener("click", async (event) => {
 
-					formData.append("category", optionElement.dataset.id);
+					// })
+					buttonAddImage[1].addEventListener("click", async (event) => {
+						event.preventDefault();
+						const formData = new FormData(formulaire);
+						const select = formulaire.querySelector("#categories");
+						const optionElement = select.querySelector(`option[value="${select.value}"]`);
 
-					await fetch(`${MODE}/works`, {
-						method: "POST",
-						headers: { Authorization: `Bearer ${JWTtoken}` },
-						body: formData,
+						formData.append("category", optionElement.dataset.id);
+
+						await fetch(`${MODE}/works`, {
+							method: "POST",
+							headers: { Authorization: `Bearer ${JWTtoken}` },
+							body: formData,
+						}).then(console.log("j'ajoute une la photo"));
+
+						formData.forEach((data) => {
+							formData.delete(data);
+						});
 					});
-				});
-			} else {
-				buttonAddImage[1].classList.add("disabled");
+				} else {
+					buttonAddImage[1].classList.add("disabled");
+				}
+			} catch (error) {
+				console.log(error);
 			}
 		}
 

@@ -8,6 +8,7 @@
 	--light-blue: #e8f1f6;
 	--grey: #cbd6dc;
 	--dark-blue: #306685;
+	--black: #0e2f28;
 }
 
 a {
@@ -219,6 +220,10 @@ nav img {
 	width: 1.5rem;
 }
 
+nav a:hover {
+	font-weight: 700;
+}
+
 li:hover {
 	color: #b1663c;
 }
@@ -226,11 +231,13 @@ li:hover {
 	display: flex;
 	align-items: center;
 }
-figure {
-	height: 100%;
+#introduction figure {
 	flex: 1.5;
 }
-
+figure {
+	height: 100%;
+	width: 100%;
+}
 figure img {
 	width: 100%;
 	height: 100%;
@@ -277,7 +284,11 @@ figcaption {
 .gallery img,
 .admin-gallery img {
 	width: 100%;
+	height: 100%;
+	aspect-ratio: 1/1.4;
+	object-fit: cover;
 }
+
 #form-style:not(.modal-content) {
 	width: 50%;
 	margin: auto;
@@ -326,6 +337,10 @@ figcaption {
 	border-radius: 60px;
 	font-size: 1.2em;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+	transition: background-color 0.3s ease-in-out;
+}
+.button:hover {
+	background-color: var(--black);
 }
 
 input[type="submit"],
@@ -358,6 +373,13 @@ footer nav ul {
 	padding: 0.7rem 1.5rem;
 	border: 2px solid var(--green);
 	border-radius: 60px;
+	transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+.list-filter button:hover,
+.list-filter button.active:hover {
+	background-color: var(--black);
+	color: white;
+	border: 2px solid var(--black);
 }
 .list-filter button.active {
 	color: white;
@@ -409,6 +431,7 @@ footer nav ul {
 	height: 700px;
 	aspect-ratio: 1/1.4;
 	padding: 3rem 5rem;
+	overflow-x: hidden;
 }
 .container-modal {
 	border-radius: 10px;
@@ -417,6 +440,7 @@ footer nav ul {
 	z-index: -1;
 	align-items: center;
 	justify-content: center;
+	overflow-x: hidden;
 }
 .separator {
 	display: flex;
@@ -441,7 +465,8 @@ footer nav ul {
 }
 .admin-gallery {
 	gap: 1rem;
-	height: 450px;
+	height: 420px;
+	overflow: auto;
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
 }
