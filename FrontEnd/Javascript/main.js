@@ -51,12 +51,14 @@ async function displayImages(response, admin = false) {
 	});
 }
 
-let indexElementDelete = [];
 function deleteImage(figure) {
 	const trashButton = figure.querySelector(".trash");
-	trashButton.addEventListener("click", (event) => {
+	trashButton.addEventListener("click", async (event) => {
 		event.preventDefault();
-		indexElementDelete.push(figure.dataset.id);
+		await fetch(`${MODE}/works/${figure.dataset.id}`, {
+			method: "DELETE",
+			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
+		}).then(displayImages(responseWorks));
 		figure.remove();
 	});
 }
@@ -188,27 +190,6 @@ function handleEditionModeClick(event) {
 			try {
 				if (inputFile.files.length > 0 && input.value !== "" && select.value !== "") {
 					buttonAddImage[1].classList.remove("disabled");
-					// buttonAddImage[1].addEventListener("click", async (event) => {
-
-					// })
-					buttonAddImage[1].addEventListener("click", async (event) => {
-						event.preventDefault();
-						const formData = new FormData(formulaire);
-						const select = formulaire.querySelector("#categories");
-						const optionElement = select.querySelector(`option[value="${select.value}"]`);
-
-						formData.append("category", optionElement.dataset.id);
-
-						await fetch(`${MODE}/works`, {
-							method: "POST",
-							headers: { Authorization: `Bearer ${JWTtoken}` },
-							body: formData,
-						}).then(console.log("j'ajoute une la photo"));
-
-						formData.forEach((data) => {
-							formData.delete(data);
-						});
-					});
 				} else {
 					buttonAddImage[1].classList.add("disabled");
 				}
@@ -216,6 +197,28 @@ function handleEditionModeClick(event) {
 				console.log(error);
 			}
 		}
+
+		buttonAddImage[1].addEventListener("click", async (event) => {
+			if (buttonAddImage[1].classList.contains("disabled")) {
+				return;
+			}
+			// event.preventDefault();
+			const formData = new FormData(formulaire);
+			const select = formulaire.querySelector("#categories");
+			const optionElement = select.querySelector(`option[value="${select.value}"]`);
+
+			formData.append("category", optionElement.dataset.id);
+
+			await fetch(`${MODE}/works`, {
+				method: "POST",
+				headers: { Authorization: `Bearer ${JWTtoken}` },
+				body: formData,
+			});
+
+			// formData.forEach((data) => {
+			// 	formData.delete(data);
+			// });
+		});
 
 		inputFile.addEventListener("change", () => {
 			customInputFile.innerHTML = "";
@@ -261,12 +264,4 @@ function closingModal() {
 	homeModal.classList.add("hidden");
 	homeModal.close();
 	bodyElement.style.overflow = "auto";
-
-	indexElementDelete.forEach(async (index) => {
-		await fetch(`${MODE}/works/${index}`, {
-			method: "DELETE",
-			headers: { accept: "*/*", Authorization: `Bearer ${JWTtoken}` },
-		}).then(displayImages(responseWorks));
-	});
-	indexElementDelete = [];
 }
