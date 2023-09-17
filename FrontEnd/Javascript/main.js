@@ -24,7 +24,6 @@ async function displayImages(response, admin = false) {
 	}
 	const container = admin ? galleryAdmin : gallery;
 
-	// gallery.innerHTML = "";
 	container.innerHTML = "";
 	response.forEach((element) => {
 		const figure = document.createElement("figure");
@@ -213,6 +212,10 @@ function handleEditionModeClick(event) {
 				method: "POST",
 				headers: { Authorization: `Bearer ${JWTtoken}` },
 				body: formData,
+			}).then(async (response) => {
+				if (response.status === 201) {
+					//logique à implémenter
+				}
 			});
 
 			// formData.forEach((data) => {
