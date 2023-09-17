@@ -10,13 +10,8 @@ console.log(MODE);
 let responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
 const JWTtoken = sessionStorage.getItem("token");
 let createModalBool = true;
-const editionModeButton = document.querySelectorAll(".edition-mode-button");
 
-ViewAdmin(editionModeButton);
-
-editionModeButton.forEach((button) => {
-	button.addEventListener("click", handleEditionModeClick);
-});
+ViewAdmin(handleEditionModeClick);
 
 //get all the images from the server and display them
 const gallery = document.querySelector(".gallery");

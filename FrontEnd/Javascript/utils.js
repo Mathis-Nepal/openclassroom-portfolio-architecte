@@ -7,40 +7,59 @@ export const createElementWithClassesAndText = (tag, classes, text) => {
 	return element;
 };
 
-export function ViewAdmin(editionModeButton) {
+export function ViewAdmin(handleEditionModeClick) {
 	const JWTtoken = sessionStorage.getItem("token");
 	console.log(JWTtoken);
 	const admin = JWTtoken !== null;
 	const listFilter = document.querySelector(".list-filter");
-	const editionMode = document.querySelector(".edition-mode");
+	let editionMode = document.querySelector(".edition-mode");
+	let editionModeButton = document.querySelectorAll(".edition-mode-button");
 	const loginButton = document.querySelector(".login-button");
-	if (listFilter !== null && editionMode !== null && editionModeButton !== null) {
+	const containerPortflio = document.querySelector(".container-button-portfolio");
+
+	if (listFilter !== null) {
 		if (admin) {
 			listFilter.classList.add("hidden");
+			createContainerEditionMode();
+			containerPortflio.append(createEditionModeButton("Modifier"));
+			editionMode = document.querySelector(".edition-mode");
+			editionModeButton = document.querySelectorAll(".edition-mode-button");
 			editionMode.classList.remove("hidden");
 			editionModeButton.forEach((button) => {
 				button.classList.remove("hidden");
+				button.addEventListener("click", handleEditionModeClick);
 			});
+
 			loginButton.innerHTML = "logout";
-			// loginButton.classList.add("logout-button");
+			loginButton.addEventListener("click", handleLogout);
 			console.log(`admin ${admin}`);
-			loginButton.addEventListener("click", (event) => {
-				event.preventDefault();
-				console.log("logout");
-				sessionStorage.removeItem("token");
-				ViewAdmin(editionModeButton);
-			});
 		} else {
+			hideEditionModeAndButtons();
 			listFilter.classList.remove("hidden");
-			editionMode.classList.add("hidden");
 			editionModeButton.forEach((button) => {
 				button.classList.add("hidden");
 			});
+
 			loginButton.innerHTML = "login";
-			loginButton.addEventListener("click", (event) => {
+			loginButton.addEventListener("click", () => {
 				location.href = "./connection.html";
 			});
 		}
+	}
+
+	function handleLogout(event) {
+		event.preventDefault();
+		sessionStorage.removeItem("token");
+		ViewAdmin();
+	}
+
+	function hideEditionModeAndButtons() {
+		if (editionMode !== null) {
+			editionMode.remove();
+		}
+		editionModeButton.forEach((button) => {
+			button.remove();
+		});
 	}
 }
 
@@ -120,4 +139,17 @@ export function createCustomInputFile(buttonFile) {
 	input.accept = "image/png, image/jpeg";
 	input.required = true;
 	buttonFile.append(container, input);
+}
+
+function createEditionModeButton(text) {
+	const button = createElementWithClassesAndText("button", ["edition-mode-button"], text);
+	const i = createElementWithClassesAndText("button", ["fa-regular", "fa-pen-to-square"]);
+	button.append(i);
+	return button;
+}
+
+function createContainerEditionMode() {
+	const editionMode = createElementWithClassesAndText("div", ["edition-mode"]);
+	editionMode.append(createEditionModeButton("Mode édition"));
+	document.body.prepend(editionMode);
 }
