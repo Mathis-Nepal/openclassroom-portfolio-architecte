@@ -1,3 +1,12 @@
+/**
+ * Import des modules nécessaires depuis les fichiers spécifiés.
+ * @typedef {import("./config.js").MODE} MODE
+ * @typedef {import("./utils.js").ViewAdmin} ViewAdmin
+ * @typedef {import("./utils.js").createFirstModal} createFirstModal
+ * @typedef {import("./utils.js").createSecondModal} createSecondModal
+ * @typedef {import("./utils.js").createCustomInputFile} createCustomInputFile
+ */
+
 import { MODE } from "./config.js";
 import { createElementWithClassesAndText } from "./utils.js";
 import { ViewAdmin } from "./utils.js";
@@ -13,10 +22,14 @@ let createModalBool = true;
 
 ViewAdmin(handleEditionModeClick);
 
-//get all the images from the server and display them
 const gallery = document.querySelector(".gallery");
 let galleryAdmin = document.querySelector(".admin-gallery");
-
+/**
+ * Affiche toutes les images provenant du serveur.
+ * @async
+ * @param {*} response - La réponse du serveur.
+ * @param {boolean} [admin=false] - Indique si l'utilisateur est un administrateur.
+ */
 async function displayImages(response, admin = false) {
 	response = await fetch(`${MODE}/works`).then((response) => response.json());
 	if (galleryAdmin === null) {
@@ -50,6 +63,10 @@ async function displayImages(response, admin = false) {
 	});
 }
 
+/**
+ * Supprime une image du serveur.
+ * @param {HTMLElement} figure - La figure de l'image à supprimer.
+ */
 function deleteImage(figure) {
 	const trashButton = figure.querySelector(".trash");
 	trashButton.addEventListener("click", async (event) => {
@@ -61,7 +78,6 @@ function deleteImage(figure) {
 		figure.remove();
 	});
 }
-
 //filter
 
 const filters = document.querySelectorAll(".list-filter button");
@@ -133,6 +149,10 @@ let bodyElement = document.querySelector("body");
 let buttonAddImage = document.querySelector(".button.modal");
 let inputFile = null;
 
+/**
+ * Initialise la vue de l'administrateur et configure les événements.
+ * @param {Event} event - L'événement de clic.
+ */
 function handleEditionModeClick(event) {
 	if (createModalBool === true) {
 		createModal();
@@ -185,6 +205,9 @@ function handleEditionModeClick(event) {
 		select.addEventListener("input", verifyChampCompleted);
 		inputFile.addEventListener("input", verifyChampCompleted);
 
+		/**
+		 * Vérifie si les champs du formulaire sont remplis pour activer le bouton d'ajout.
+		 */
 		function verifyChampCompleted() {
 			try {
 				if (inputFile.files.length > 0 && input.value !== "" && select.value !== "") {
@@ -197,11 +220,11 @@ function handleEditionModeClick(event) {
 			}
 		}
 
-		buttonAddImage[1].addEventListener("click", async (event) => {
+		formulaire.addEventListener("submit", async (event) => {
+			event.preventDefault();
 			if (buttonAddImage[1].classList.contains("disabled")) {
 				return;
 			}
-			// event.preventDefault();
 			const formData = new FormData(formulaire);
 			const select = formulaire.querySelector("#categories");
 			const optionElement = select.querySelector(`option[value="${select.value}"]`);
@@ -214,7 +237,10 @@ function handleEditionModeClick(event) {
 				body: formData,
 			}).then(async (response) => {
 				if (response.status === 201) {
-					//logique à implémenter
+					await displayImages(responseWorks);
+					closingModal();
+				} else {
+					console.log("Erreur lors de l'ajout de l'image");
 				}
 			});
 
@@ -223,30 +249,29 @@ function handleEditionModeClick(event) {
 			// });
 		});
 
-		inputFile.addEventListener("change", () => {
+		inputFile.addEventListener("change", (event) => {
 			customInputFile.innerHTML = "";
 
-			// Obtient les fichiers sélectionnés par l'utilisateur
 			const files = inputFile.files;
 
-			// Vérifie s'il y a au moins un fichier sélectionné
 			if (files.length > 0) {
-				// Crée un objet FileReader pour lire le contenu du fichier
-				const reader = new FileReader();
+				const maxSize = 1024 * 1024 * 4; // 2 Mo
+				if (event.target.files[0].size <= maxSize) {
+					const reader = new FileReader();
 
-				// Crée un élément image
-				const image = document.createElement("img");
-				image.classList.add("preview-image"); // Ajoute une classe pour le style CSS
-				customInputFile.appendChild(image);
+					const image = document.createElement("img");
+					image.classList.add("preview-image");
+					customInputFile.appendChild(image);
 
-				// Ajoute un écouteur d'événement pour lire le fichier lorsqu'il est chargé
-				reader.addEventListener("load", () => {
-					// Affecte la source de l'image à la donnée lue depuis le fichier
-					image.src = reader.result;
-				});
+					reader.addEventListener("load", () => {
+						image.src = reader.result;
+					});
 
-				// Lit le contenu du fichier en tant que données URL
-				reader.readAsDataURL(files[0]);
+					reader.readAsDataURL(files[0]);
+				} else {
+					alert("Le fichier est trop volumineux");
+					createCustomInputFile(customInputFile);
+				}
 			} else {
 				createCustomInputFile(customInputFile);
 			}
@@ -254,6 +279,9 @@ function handleEditionModeClick(event) {
 	}
 }
 
+/**
+ * Crée et affiche la modal.
+ */
 function createModal() {
 	const dialog = createElementWithClassesAndText("dialog", ["container-modal", "hidden"]);
 	createFirstModal(dialog, galleryAdmin);
@@ -261,9 +289,11 @@ function createModal() {
 	document.body.appendChild(dialog);
 }
 
+/**
+ * Ferme la modal.
+ */
 function closingModal() {
 	galleryAdmin.innerHTML = "";
-
 	homeModal.classList.add("hidden");
 	homeModal.close();
 	bodyElement.style.overflow = "auto";

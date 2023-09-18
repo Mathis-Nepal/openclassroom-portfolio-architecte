@@ -7,6 +7,12 @@ export const createElementWithClassesAndText = (tag, classes, text) => {
 	return element;
 };
 
+/**
+ * Vue du site en mode administrateur ou classique.
+ *
+ * @export
+ * @param {Function} handleEditionModeClick - Fonction de gestion du clic en mode administrateur.
+ */
 export function ViewAdmin(handleEditionModeClick) {
 	const JWTtoken = sessionStorage.getItem("token");
 	console.log(JWTtoken);
@@ -47,12 +53,20 @@ export function ViewAdmin(handleEditionModeClick) {
 		}
 	}
 
+	/**
+	 * Gère la déconnexion de l'administrateur.
+	 *
+	 * @param {Event} event - L'événement de clic.
+	 */
 	function handleLogout(event) {
 		event.preventDefault();
 		sessionStorage.removeItem("token");
 		ViewAdmin();
 	}
 
+	/**
+	 * Masque le mode édition et les boutons associés.
+	 */
 	function hideEditionModeAndButtons() {
 		if (editionMode !== null) {
 			editionMode.remove();
@@ -63,6 +77,12 @@ export function ViewAdmin(handleEditionModeClick) {
 	}
 }
 
+/**
+ * Crée le premier modal.
+ *
+ * @param {HTMLElement} dialog - L'élément du dialogue modal.
+ * @param {HTMLElement} galleryAdmin - L'élément de la galerie en mode administrateur.
+ */
 export function createFirstModal(dialog, galleryAdmin) {
 	const modalContent = createElementWithClassesAndText("div", ["modal-content", "first"]);
 	const i = createElementWithClassesAndText("i", ["fa-solid", "fa-xmark", "close-modal"]);
@@ -78,6 +98,12 @@ export function createFirstModal(dialog, galleryAdmin) {
 	dialog.appendChild(modalContent);
 }
 
+/**
+ * Crée le second modal.
+ *
+ * @param {HTMLElement} dialog - L'élément du dialogue modal.
+ * @param {Array.<Object>} responseWorks - La réponse des travaux.
+ */
 export function createSecondModal(dialog, responseWorks) {
 	const formStyleElement = createElementWithClassesAndText("div", ["modal-content", "second", "hidden"]);
 	formStyleElement.id = "form-style";
@@ -127,6 +153,12 @@ export function createSecondModal(dialog, responseWorks) {
 	dialog.appendChild(formStyleElement);
 }
 
+/**
+ * Crée un champ de fichier d'entrée personnalisé.
+ *
+ * @param {HTMLElement} buttonFile - Le bouton pour ajouter une photo.
+ */
+
 export function createCustomInputFile(buttonFile) {
 	const container = createElementWithClassesAndText("div", ["container"]);
 	const label = createElementWithClassesAndText("label", [], "+ Ajouter une photo");
@@ -141,6 +173,12 @@ export function createCustomInputFile(buttonFile) {
 	buttonFile.append(container, input);
 }
 
+/**
+ * Crée un bouton de mode édition.
+ *
+ * @param {string} text - Le texte du bouton.
+ * @returns {HTMLElement} Le bouton du mode édition.
+ */
 function createEditionModeButton(text) {
 	const button = createElementWithClassesAndText("button", ["edition-mode-button"], text);
 	const i = createElementWithClassesAndText("button", ["fa-regular", "fa-pen-to-square"]);
@@ -148,6 +186,9 @@ function createEditionModeButton(text) {
 	return button;
 }
 
+/**
+ * Crée le conteneur du mode édition.
+ */
 function createContainerEditionMode() {
 	const editionMode = createElementWithClassesAndText("div", ["edition-mode"]);
 	editionMode.append(createEditionModeButton("Mode édition"));
