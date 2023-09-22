@@ -1,9 +1,38 @@
-export const createElementWithClassesAndText = (tag, classes, text) => {
+//jsdoc
+/**
+ * Crée un élément HTML avec des classes et du texte.
+ * @param {string} tag - Le tag HTML de l'élément.
+ * @param {Array.<string>} classes - Les classes de l'élément.
+ * @param {string} text - Le texte de l'élément.
+ * @param {string} id - L'id de l'élément.
+ * @param {string} value - La valeur de l'élément.
+ * @param {string} type - Le type de l'élément.
+ * @param {string} name - Le nom de l'élément.
+ * @param {string} placeholder - Le placeholder de l'élément.
+ * @param {string} action - L'action de l'élément.
+ * @param {string} accept - L'accept de l'élément.
+ * @param {boolean} required - Le required de l'élément.
+ * @param {string} labelFor - Le for de l'élément.
+ *
+ * @returns {HTMLElement} L'élément HTML.
+ * @example
+ * createCustomElement(tag : "div", classes : ["class1", "class2"], text : "text", id : "id", value : "value", type : "type", name : "name", placeholder : "placeholder");
+ **/
+export const createCustomElement = ({ tag: tag, classes: classes, text: text, id: id, value: value, type: type, name: name, placeholder: placeholder, action: action, accept: accept, required: required, labelFor: labelFor, src: src, alt: alt }) => {
 	const element = document.createElement(tag);
-	element.classList.add(...classes);
-	if (text) {
-		element.textContent = text;
-	}
+	if (classes) element.classList.add(...classes);
+	if (text) element.textContent = text;
+	if (id) element.id = id;
+	if (type) element.type = type;
+	if (value) element.value = value;
+	if (name) element.name = name;
+	if (placeholder) element.placeholder = placeholder;
+	if (action) element.action = action;
+	if (accept) element.accept = accept;
+	if (required) element.required = required;
+	if (labelFor) element.for = labelFor;
+	if (src) element.src = src;
+	if (alt) element.alt = alt;
 	return element;
 };
 
@@ -84,16 +113,17 @@ export function ViewAdmin(handleEditionModeClick) {
  * @param {HTMLElement} galleryAdmin - L'élément de la galerie en mode administrateur.
  */
 export function createFirstModal(dialog, galleryAdmin) {
-	const modalContent = createElementWithClassesAndText("div", ["modal-content", "first"]);
-	const i = createElementWithClassesAndText("i", ["fa-solid", "fa-xmark", "close-modal"]);
-	const titleModal = createElementWithClassesAndText("span", ["title-modal"], "Galerie photo");
+	// const modalContent = createCustomElement({ tag:"div", ["modal-content", "first"]);
+	const modalContent = createCustomElement({ tag: "div", classes: ["modal-content", "first"] });
+	const i = createCustomElement({ tag: "i", classes: ["fa-solid", "fa-xmark", "close-modal"] });
+	const titleModal = createCustomElement({ tag: "span", classes: ["title-modal"], text: "Galerie photo" });
 	if (galleryAdmin !== null) {
 		galleryAdmin.classList.add("admin-gallery");
 	} else {
-		galleryAdmin = createElementWithClassesAndText("div", ["admin-gallery"]);
+		galleryAdmin = createCustomElement({ tag: "div", classes: ["admin-gallery"] });
 	}
-	const separator = createElementWithClassesAndText("span", ["separator"]);
-	const buttonModal = createElementWithClassesAndText("button", ["button", "modal"], "Ajouter une photo");
+	const separator = createCustomElement({ tag: "span", classes: ["separator"] });
+	const buttonModal = createCustomElement({ tag: "button", classes: ["button", "modal"], text: "Ajouter une photo" });
 	modalContent.append(i, titleModal, galleryAdmin, separator, buttonModal);
 	dialog.appendChild(modalContent);
 }
@@ -105,49 +135,41 @@ export function createFirstModal(dialog, galleryAdmin) {
  * @param {Array.<Object>} responseWorks - La réponse des travaux.
  */
 export function createSecondModal(dialog, responseWorks) {
-	const formStyleElement = createElementWithClassesAndText("div", ["modal-content", "second", "hidden"]);
-	formStyleElement.id = "form-style";
+	const formStyleElement = createCustomElement({ tag: "div", classes: ["modal-content", "second", "hidden"], id: "form-style" });
 
 	// Créer et ajouter les éléments du formulaire au div form-style
-	formStyleElement.append(createElementWithClassesAndText("i", ["fa-solid", "fa-xmark", "close-modal"]), createElementWithClassesAndText("span", ["title-modal"], "Ajout photo"));
+
+	formStyleElement.append(createCustomElement({ tag: "i", classes: ["fa-solid", "fa-xmark", "close-modal"] }), createCustomElement({ tag: "i", classes: ["fa-solid", "fa-arrow-left", "back-modal"] }), createCustomElement({ tag: "span", classes: ["title-modal"], text: "Ajout photo" }));
 
 	// Créer le formulaire
-	const formElement = createElementWithClassesAndText("form", [], null);
-	formElement.action = "#"; // Spécifiez l'URL de l'action du formulaire ici
+	const formElement = createCustomElement({ tag: "form", action: "#" });
 
-	const buttonFile = createElementWithClassesAndText("button", ["button-file"], null);
-	buttonFile.type = "button";
+	const buttonFile = createCustomElement({ tag: "button", classes: ["button-file"], type: "button" });
 	createCustomInputFile(buttonFile);
-	const inputTitle = createElementWithClassesAndText("input", ["shadow"], null);
-	inputTitle.type = "text";
-	inputTitle.id = "title";
-	inputTitle.name = "title";
-	inputTitle.placeholder = "Abajour Tahina";
-	formElement.append(buttonFile, createElementWithClassesAndText("label", [], "Titre"), inputTitle, createElementWithClassesAndText("label", [], "Categorie"));
+	const inputTitle = createCustomElement({ tag: "input", classes: ["shadow"], type: "text", id: "title", name: "title", placeholder: "Abajour Tahina" });
+	formElement.append(buttonFile, createCustomElement({ tag: "label", text: "Titre" }), inputTitle, createCustomElement({ tag: "label", text: "Categorie" }));
 
 	// Créer le menu déroulant
-	const categoriesSelectElement = createElementWithClassesAndText("select", ["shadow"], null);
-	categoriesSelectElement.id = "categories";
+	const categoriesSelectElement = createCustomElement({ tag: "select", classes: ["shadow"], id: "categories" });
 
 	const categories = responseWorks.map((element) => element.category.name);
 	const categoriesUnique = [...new Set(categories)];
 
-	const optionElement = createElementWithClassesAndText("option", [], "");
-	optionElement.value = "";
+	const optionElement = createCustomElement({ tag: "option", value: "" });
 	categoriesSelectElement.appendChild(optionElement);
 	let counterCategories = 1;
 	categoriesUnique.forEach((category) => {
-		const optionElement = createElementWithClassesAndText("option", [], category);
+		const optionElement = createCustomElement({ tag: "option", text: category });
 		optionElement.dataset.id = counterCategories;
 		optionElement.value = category;
 		categoriesSelectElement.appendChild(optionElement);
 		counterCategories++;
 	});
 
-	const button = createElementWithClassesAndText("input", ["button", "modal", "disabled"]);
+	const button = createCustomElement({ tag: "input", classes: ["button", "modal", "disabled"], type: "submit", value: "Ajouter" });
 	button.type = "submit";
 	button.value = "Ajouter";
-	formElement.append(categoriesSelectElement, createElementWithClassesAndText("span", ["separator"], null), button);
+	formElement.append(categoriesSelectElement, createCustomElement({ tag: "span", classes: ["separator"] }), button);
 
 	formStyleElement.appendChild(formElement);
 	dialog.appendChild(formStyleElement);
@@ -160,16 +182,11 @@ export function createSecondModal(dialog, responseWorks) {
  */
 
 export function createCustomInputFile(buttonFile) {
-	const container = createElementWithClassesAndText("div", ["container"]);
-	const label = createElementWithClassesAndText("label", [], "+ Ajouter une photo");
-	label.for = "file";
-	container.append(createElementWithClassesAndText("i", ["fa-solid", "fa-image"]), label, createElementWithClassesAndText("span", [], "jpg, png : 4mo max"));
-	const input = createElementWithClassesAndText("input", [], null);
-	input.type = "file";
-	input.id = "file";
-	input.name = "image";
-	input.accept = "image/png, image/jpeg";
-	input.required = true;
+	buttonFile.innerHTML = "";
+	const container = createCustomElement({ tag: "div", classes: ["container"] });
+	const label = createCustomElement({ tag: "label", text: "+ Ajouter une photo", labelFor: "file" });
+	container.append(createCustomElement({ tag: "i", classes: ["fa-solid", "fa-image"] }), label, createCustomElement({ tag: "span", text: "jpg, png : 4mo max" }));
+	const input = createCustomElement({ tag: "input", type: "file", id: "file", name: "image", accept: "image/png, image/jpeg", required: true });
 	buttonFile.append(container, input);
 }
 
@@ -180,8 +197,8 @@ export function createCustomInputFile(buttonFile) {
  * @returns {HTMLElement} Le bouton du mode édition.
  */
 function createEditionModeButton(text) {
-	const button = createElementWithClassesAndText("button", ["edition-mode-button"], text);
-	const i = createElementWithClassesAndText("button", ["fa-regular", "fa-pen-to-square"]);
+	const button = createCustomElement({ tag: "button", classes: ["edition-mode-button"], text: text });
+	const i = createCustomElement({ tag: "button", classes: ["fa-regular", "fa-pen-to-square"] });
 	button.append(i);
 	return button;
 }
@@ -190,7 +207,7 @@ function createEditionModeButton(text) {
  * Crée le conteneur du mode édition.
  */
 function createContainerEditionMode() {
-	const editionMode = createElementWithClassesAndText("div", ["edition-mode"]);
+	const editionMode = createCustomElement({ tag: "div", classes: ["edition-mode"] });
 	editionMode.append(createEditionModeButton("Mode édition"));
 	document.body.prepend(editionMode);
 }

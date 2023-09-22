@@ -498,6 +498,14 @@ footer nav ul {
 	font-size: 1.5rem;
 	padding: 2rem;
 }
+.back-modal {
+	cursor: pointer;
+	position: absolute;
+	top: -1rem;
+	left: -0.75rem;
+	font-size: 1.5rem;
+	padding: 2rem;
+}
 .modal-content figure {
 	position: relative;
 }

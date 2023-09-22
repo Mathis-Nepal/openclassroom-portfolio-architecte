@@ -7,53 +7,44 @@
  * @typedef {import("./utils.js").createCustomInputFile} createCustomInputFile
  */
 
+import "./connection.js";
+import "./modal_popup.js";
 import { MODE } from "./config.js";
-import { createElementWithClassesAndText } from "./utils.js";
-import { ViewAdmin } from "./utils.js";
-import { createFirstModal } from "./utils.js";
-import { createSecondModal } from "./utils.js";
-import { createCustomInputFile } from "./utils.js";
+import { ViewAdmin, createFirstModal, createSecondModal, createCustomInputFile, createCustomElement } from "./utils.js";
 
-console.log(MODE);
-
-let responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
-const JWTtoken = sessionStorage.getItem("token");
-let createModalBool = true;
-
-ViewAdmin(handleEditionModeClick);
+export let responseWorks = await fetch(`${MODE}/works`).then((response) => response.json());
+export const JWTtoken = sessionStorage.getItem("token");
 
 const gallery = document.querySelector(".gallery");
-let galleryAdmin = document.querySelector(".admin-gallery");
+export let galleryAdmin = document.querySelector(".admin-gallery");
 /**
  * Affiche toutes les images provenant du serveur.
  * @async
  * @param {*} response - La réponse du serveur.
  * @param {boolean} [admin=false] - Indique si l'utilisateur est un administrateur.
  */
-async function displayImages(response, admin = false) {
-	response = await fetch(`${MODE}/works`).then((response) => response.json());
+export async function displayImages(response, admin = false, filter = false) {
+	if (!filter) {
+		response = await fetch(`${MODE}/works`).then((response) => response.json());
+	}
+
 	if (galleryAdmin === null) {
-		galleryAdmin = createElementWithClassesAndText("div", ["admin-gallery"]);
+		galleryAdmin = createCustomElement({ tag: "div", classes: ["admin-gallery"] });
 	}
 	const container = admin ? galleryAdmin : gallery;
 
 	container.innerHTML = "";
 	response.forEach((element) => {
-		const figure = document.createElement("figure");
-		const img = document.createElement("img");
-		img.src = element.imageUrl;
-		img.alt = element.title;
+		const figure = createCustomElement({ tag: "figure" });
+		const img = createCustomElement({ tag: "img", src: element.imageUrl, alt: element.title });
 
 		if (!admin) {
-			const figcaption = document.createElement("figcaption");
-			figcaption.textContent = element.title;
+			const figcaption = createCustomElement({ tag: "figcaption", text: element.title });
 			figure.append(img, figcaption);
 		} else {
-			const trash = document.createElement("button");
-			trash.classList.add("trash");
+			const trash = createCustomElement({ tag: "button", classes: ["trash"] });
 			figure.dataset.id = element.id;
-			const i = document.createElement("i");
-			i.classList.add("fa-solid", "fa-trash-can", "trash-icon");
+			const i = createCustomElement({ tag: "i", classes: ["fa-solid", "fa-trash-can", "trash-icon"] });
 			trash.appendChild(i);
 			figure.append(trash, img);
 			deleteImage(figure);
@@ -62,6 +53,14 @@ async function displayImages(response, admin = false) {
 		container.appendChild(figure);
 	});
 }
+
+if (gallery !== null) {
+	displayImages(responseWorks);
+}
+
+filter();
+
+// function
 
 /**
  * Supprime une image du serveur.
@@ -78,223 +77,32 @@ function deleteImage(figure) {
 		figure.remove();
 	});
 }
-//filter
-
-const filters = document.querySelectorAll(".list-filter button");
-
-filters.forEach((filter) => {
-	filter.addEventListener("click", () => {
-		const filterName = filter.textContent.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-		if (filter.classList.contains("active") === false) {
-			document.querySelector(".gallery").innerHTML = "";
-
-			filters.forEach((otherFilter) => {
-				otherFilter.classList.remove("active");
-			});
-
-			filter.classList.add("active");
-			const elementFilterise = responseWorks.filter(function (element) {
-				if (filter.textContent === "Tous") {
-					return element;
-				}
-				return element.category.name === filterName;
-			});
-			displayImages(elementFilterise);
-		}
-	});
-});
-if (gallery !== null) {
-	displayImages(responseWorks);
-}
-
-//connection
-
-function connection() {
-	const email = document.querySelector(".email-connection");
-	const password = document.querySelector(".password-connection");
-	const buttonConnection = document.querySelector(".connection");
-	const error = document.querySelector(".error-connection");
-
-	if (buttonConnection !== null) {
-		buttonConnection.addEventListener("click", async (event) => {
-			event.preventDefault();
-			const emailValue = email.value;
-			const passwordValue = password.value;
-			await fetch(`${MODE}/users/login`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ email: emailValue, password: passwordValue }),
-			}).then(async (response) => {
-				const token = await response.json().then((data) => data.token);
-				if (response.status === 200) {
-					window.location.href = "index.html";
-					sessionStorage.setItem("token", token);
-				} else {
-					error.classList.add("active");
-				}
-			});
-		});
-	}
-}
-connection();
-
-//modal amdin
-
-let closeModalButtons = document.querySelectorAll(".close-modal");
-let homeModal = document.querySelector(".container-modal");
-let modalContent = document.querySelectorAll(".modal-content");
-let firstModalContent = document.querySelector(".modal-content.first");
-let secondModalContent = document.querySelector(".modal-content.second");
-let bodyElement = document.querySelector("body");
-let buttonAddImage = document.querySelector(".button.modal");
-let inputFile = null;
 
 /**
- * Initialise la vue de l'administrateur et configure les événements.
- * @param {Event} event - L'événement de clic.
- */
-function handleEditionModeClick(event) {
-	if (createModalBool === true) {
-		createModal();
-		createModalBool = false;
-	}
-	displayImages(responseWorks, true);
+ * Fonctionnement des fitlres
+ **/
+function filter() {
+	const filters = document.querySelectorAll(".list-filter button");
 
-	closeModalButtons = document.querySelectorAll(".close-modal");
-	homeModal = document.querySelector(".container-modal");
-	modalContent = document.querySelectorAll(".modal-content");
-	firstModalContent = document.querySelector(".modal-content.first");
-	secondModalContent = document.querySelector(".modal-content.second");
-	bodyElement = document.querySelector("body");
-	buttonAddImage = document.querySelectorAll(".button.modal");
+	filters.forEach((filter) => {
+		filter.addEventListener("click", () => {
+			const filterName = filter.textContent.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+			if (filter.classList.contains("active") === false) {
+				document.querySelector(".gallery").innerHTML = "";
 
-	homeModal.classList.remove("hidden");
-	firstModalContent.classList.remove("hidden");
-	secondModalContent.classList.add("hidden");
-	homeModal.showModal();
+				filters.forEach((otherFilter) => {
+					otherFilter.classList.remove("active");
+				});
 
-	bodyElement.style.overflow = "hidden";
-	event.stopPropagation();
-
-	homeModal.addEventListener("click", closingModal);
-
-	modalContent.forEach((modal) => {
-		modal.addEventListener("click", (event) => {
-			event.stopPropagation();
-		});
-	});
-	closeModalButtons.forEach((button) => {
-		button.addEventListener("click", closingModal);
-	});
-
-	buttonAddImage[0].addEventListener("click", () => {
-		firstModalContent.classList.add("hidden");
-		secondModalContent.classList.remove("hidden");
-	});
-
-	// formulaire d'ajout d'image
-
-	if (secondModalContent !== null) {
-		const formulaire = secondModalContent.querySelector("form");
-		inputFile = formulaire.querySelector("#file");
-		const customInputFile = formulaire.querySelector(".button-file .container");
-		const input = formulaire.querySelector("#title");
-		const select = formulaire.querySelector("#categories");
-
-		input.addEventListener("input", verifyChampCompleted);
-		select.addEventListener("input", verifyChampCompleted);
-		inputFile.addEventListener("input", verifyChampCompleted);
-
-		/**
-		 * Vérifie si les champs du formulaire sont remplis pour activer le bouton d'ajout.
-		 */
-		function verifyChampCompleted() {
-			try {
-				if (inputFile.files.length > 0 && input.value !== "" && select.value !== "") {
-					buttonAddImage[1].classList.remove("disabled");
-				} else {
-					buttonAddImage[1].classList.add("disabled");
-				}
-			} catch (error) {
-				console.log(error);
-			}
-		}
-
-		formulaire.addEventListener("submit", async (event) => {
-			event.preventDefault();
-			if (buttonAddImage[1].classList.contains("disabled")) {
-				return;
-			}
-			const formData = new FormData(formulaire);
-			const select = formulaire.querySelector("#categories");
-			const optionElement = select.querySelector(`option[value="${select.value}"]`);
-
-			formData.append("category", optionElement.dataset.id);
-
-			await fetch(`${MODE}/works`, {
-				method: "POST",
-				headers: { Authorization: `Bearer ${JWTtoken}` },
-				body: formData,
-			}).then(async (response) => {
-				if (response.status === 201) {
-					await displayImages(responseWorks);
-					closingModal();
-				} else {
-					console.log("Erreur lors de l'ajout de l'image");
-				}
-			});
-
-			// formData.forEach((data) => {
-			// 	formData.delete(data);
-			// });
-		});
-
-		inputFile.addEventListener("change", (event) => {
-			customInputFile.innerHTML = "";
-
-			const files = inputFile.files;
-
-			if (files.length > 0) {
-				const maxSize = 1024 * 1024 * 4; // 2 Mo
-				if (event.target.files[0].size <= maxSize) {
-					const reader = new FileReader();
-
-					const image = document.createElement("img");
-					image.classList.add("preview-image");
-					customInputFile.appendChild(image);
-
-					reader.addEventListener("load", () => {
-						image.src = reader.result;
-					});
-
-					reader.readAsDataURL(files[0]);
-				} else {
-					alert("Le fichier est trop volumineux");
-					createCustomInputFile(customInputFile);
-				}
-			} else {
-				createCustomInputFile(customInputFile);
+				filter.classList.add("active");
+				const elementFilterise = responseWorks.filter(function (element) {
+					if (filter.textContent === "Tous") {
+						return element;
+					}
+					return element.category.name === filterName;
+				});
+				displayImages(elementFilterise, false, true);
 			}
 		});
-	}
-}
-
-/**
- * Crée et affiche la modal.
- */
-function createModal() {
-	const dialog = createElementWithClassesAndText("dialog", ["container-modal", "hidden"]);
-	createFirstModal(dialog, galleryAdmin);
-	createSecondModal(dialog, responseWorks);
-	document.body.appendChild(dialog);
-}
-
-/**
- * Ferme la modal.
- */
-function closingModal() {
-	galleryAdmin.innerHTML = "";
-	homeModal.classList.add("hidden");
-	homeModal.close();
-	bodyElement.style.overflow = "auto";
+	});
 }
