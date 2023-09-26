@@ -44,7 +44,6 @@ export const createCustomElement = ({ tag: tag, classes: classes, text: text, id
  */
 export function ViewAdmin(handleEditionModeClick) {
 	const JWTtoken = sessionStorage.getItem("token");
-	console.log(JWTtoken);
 	const admin = JWTtoken !== null;
 	const listFilter = document.querySelector(".list-filter");
 	let editionMode = document.querySelector(".edition-mode");
@@ -67,7 +66,6 @@ export function ViewAdmin(handleEditionModeClick) {
 
 			loginButton.innerHTML = "logout";
 			loginButton.addEventListener("click", handleLogout);
-			console.log(`admin ${admin}`);
 		} else {
 			hideEditionModeAndButtons();
 			listFilter.classList.remove("hidden");
@@ -146,11 +144,11 @@ export function createSecondModal(dialog, responseWorks) {
 
 	const buttonFile = createCustomElement({ tag: "button", classes: ["button-file"], type: "button" });
 	createCustomInputFile(buttonFile);
-	const inputTitle = createCustomElement({ tag: "input", classes: ["shadow"], type: "text", id: "title", name: "title", placeholder: "Abajour Tahina" });
+	const inputTitle = createCustomElement({ tag: "input", classes: ["shadow"], type: "text", id: "title", name: "title", placeholder: "Abajour Tahina", required: true });
 	formElement.append(buttonFile, createCustomElement({ tag: "label", text: "Titre" }), inputTitle, createCustomElement({ tag: "label", text: "Categorie" }));
 
 	// Créer le menu déroulant
-	const categoriesSelectElement = createCustomElement({ tag: "select", classes: ["shadow"], id: "categories" });
+	const categoriesSelectElement = createCustomElement({ tag: "select", classes: ["shadow"], id: "categories", required: true });
 
 	const categories = responseWorks.map((element) => element.category.name);
 	const categoriesUnique = [...new Set(categories)];

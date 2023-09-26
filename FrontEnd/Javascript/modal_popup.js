@@ -12,6 +12,7 @@ let bodyElement = document.querySelector("body");
 let buttonAddImage = document.querySelector(".button.modal");
 let inputFile = null;
 let createModalBool = true;
+let verify = false;
 
 ViewAdmin(handleEditionModeClick);
 /**
@@ -57,10 +58,8 @@ function handleEditionModeClick(event) {
 		firstModalContent.classList.add("hidden");
 		secondModalContent.classList.remove("hidden");
 	});
-
-	// formulaire d'ajout d'image
-
-	if (secondModalContent !== null) {
+	// checkForElement();
+	if (secondModalContent != null) {
 		const formulaire = secondModalContent.querySelector("form");
 		inputFile = formulaire.querySelector("#file");
 		const input = formulaire.querySelector("#title");
@@ -76,8 +75,8 @@ function handleEditionModeClick(event) {
 	}
 }
 
-
 function addImageForm(event) {
+	const formulaire = secondModalContent.querySelector("form");
 	const customInputFile = formulaire.querySelector(".button-file .container");
 	customInputFile.innerHTML = "";
 
@@ -119,7 +118,6 @@ function backModal() {
 	const select = formulaire.querySelector("#categories");
 	const inputFile = formulaire.querySelector("#file");
 	if (inputFile.files !== null || input.value !== "" || select.value !== "") {
-		console.log("nulllllle");
 		return;
 	}
 	if (input.value !== "" || select.value !== "" || inputFile.files.length > 0) {
@@ -138,32 +136,34 @@ function secondModalSubmit() {
 	const buttonAddImage = document.querySelectorAll(".button.modal");
 	formulaire.addEventListener("submit", async (event) => {
 		event.preventDefault();
-		if (buttonAddImage[1].classList.contains("disabled")) {
+		if (buttonAddImage[1].classList.contains("disabled") || verify === false) {
 			return;
 		}
-		const formData = new FormData(formulaire);
-		const select = formulaire.querySelector("#categories");
-		const optionElement = select.querySelector(`option[value="${select.value}"]`);
+		if (verify) {
+			verify = false;
 
-		formData.append("category", optionElement.dataset.id);
+			const formData = new FormData(formulaire);
+			const select = formulaire.querySelector("#categories");
+			const optionElement = select.querySelector(`option[value="${select.value}"]`);
+			formData.append("category", optionElement.dataset.id);
 
-		await fetch(`${MODE}/works`, {
-			method: "POST",
-			headers: { Authorization: `Bearer ${JWTtoken}` },
-			body: formData,
-		}).then(async (response) => {
-			if (response.status === 201) {
-				resetForm();
-				await displayImages(responseWorks);
-				closingModal();
-			} else {
-				console.log("Erreur lors de l'ajout de l'image");
-			}
-		});
-
-		formData.forEach((data) => {
-			formData.delete(data);
-		});
+			await fetch(`${MODE}/works`, {
+				method: "POST",
+				headers: { Authorization: `Bearer ${JWTtoken}` },
+				body: formData,
+			}).then(async (response) => {
+				if (response.status === 201) {
+					resetForm();
+					await displayImages(responseWorks);
+					closingModal();
+				} else {
+					console.log("Erreur lors de l'ajout de l'image");
+				}
+			});
+			formData.forEach((data) => {
+				formData.delete(data);
+			});
+		}
 	});
 }
 
@@ -179,8 +179,10 @@ function verifyChampCompleted() {
 	try {
 		if (inputFile.files.length > 0 && input.value !== "" && select.value !== "") {
 			buttonAddImage[1].classList.remove("disabled");
+			verify = true;
 		} else {
 			buttonAddImage[1].classList.add("disabled");
+			verify = false;
 		}
 	} catch (error) {
 		console.log(error);
@@ -200,7 +202,7 @@ function resetForm() {
 	if (customInputFile === null && inputFile.files === null && image === null) return;
 	formulaire.reset();
 	if (image !== null) image.src = "";
-	createCustomInputFile(customInputContainerFile);
+	// createCustomInputFile(customInputContainerFile);
 }
 
 /**
@@ -217,6 +219,14 @@ function createModal() {
  * Ferme la modal.
  */
 function closingModal() {
+	const formulaire = secondModalContent.querySelector("form");
+	const image = formulaire.querySelector(".preview-image");
+	const customInputContainerFile = formulaire.querySelector(".button-file");
+	if (formulaire !== null) {
+		formulaire.reset();
+		if (image !== null) image.src = "";
+		createCustomInputFile(customInputContainerFile);
+	}
 	galleryAdmin.innerHTML = "";
 	homeModal.classList.add("hidden");
 	homeModal.close();
